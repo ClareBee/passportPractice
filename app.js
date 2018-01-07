@@ -69,11 +69,17 @@ app.get("/login", function(req, res){
 });
 //log in logic - uses authenticate as middleware (runs before the final callback - ie in the middle of the route)
 app.post("/login", passport.authenticate("local",{
-  successRedirect: "/secret",
-  failureRedirect: "/login"
-}), function(req, res){
-
+    successRedirect: "/secret",
+    failureRedirect: "/login"
+  }), function(req, res){
 });
+//log out
+app.get("/logout", function(req, res){
+  //passport destroys all the user data in this session
+  req.logout();
+  res.redirect("/");
+});
+
 
 // =================================================
 app.listen("3000", function(){
