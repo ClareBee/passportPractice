@@ -32,11 +32,11 @@ passport.deserializeUser(User.deserializeUser());
 //===========================================
 // ROUTES
 
-app.get('/', function(req, res){
+app.get("/", function(req, res){
   res.render("home");
 });
-//secret page route to test authentication
-app.get('/secret', function(req, res){
+//secret page with middleware added to check user info
+app.get("/secret", isLoggedIn, function(req, res){
   res.render("secret");
 });
 // +++++++++++++++++++++++++++++++++++++++++++++
@@ -80,6 +80,14 @@ app.get("/logout", function(req, res){
   res.redirect("/");
 });
 
+//middleware function (express)
+function isLoggedIn(req, res, next){
+  //passport
+  if(req.isAuthenticated()){
+    return next();
+  }
+  res.redirect("/login");
+};
 
 // =================================================
 app.listen("3000", function(){
