@@ -20,6 +20,10 @@ app.use(require("express-session")({
 app.use(passport.initialize());
 app.use(passport.session());
 
+//reading the data from the session - encoding and decoding (thanks to passport local mongoose)
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
 app.get('/', function(req, res){
   res.render("home");
 });
