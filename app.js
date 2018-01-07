@@ -3,7 +3,7 @@ var   express = require("express"),
       passport = require("passport"),
       bodyParser = require("body-parser"),
       User = require("./models/user"),
-      localStrategy = require("passport-local"),
+      LocalStrategy = require("passport-local"),
       passportLocalMongoose = require("passport-local-mongoose");
 
 mongoose.connect("mongodb://localhost/authdemoapp");
@@ -19,9 +19,12 @@ app.use(require("express-session")({
 //we need this line every time we set up a form
 app.use(bodyParser.urlencoded({extended: true}));
 //sets up passport session
+
 app.use(passport.initialize());
 app.use(passport.session());
 
+//creates new "local" strategy using authenticate method from passport local mongoose
+passport.use(new LocalStrategy(User.authenticate()))
 //reading the data from the session - encoding and decoding (thanks to passport local mongoose)
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
@@ -57,8 +60,22 @@ app.post("/register", function(req, res){
         res.redirect("/secret");
       });
   });
+});
+// ++++++++++++++++++++++++++++++++++++++++++++++++
+// LOGIN ROUTES
+//render log in form
+app.get("/login", function(req, res){
+  res.render("login");
+});
+//log in logic - uses authenticate as middleware (runs before the final callback - ie in the middle of the route)
+app.post("/login", passport.authenticate("local",{
+  successRedirect: "/secret",
+  failureRedirect: "/login"
+}), function(req, res){
 
 });
+
+// =================================================
 app.listen("3000", function(){
   console.log("server started");
 });
